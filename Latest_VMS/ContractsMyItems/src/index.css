@@ -1,0 +1,410 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-blue: #2879b6;
+  --color-brand-green: #7dc244;
+  --color-brand-orange: #ee6a31;
+  --color-pt-primary: #1E88E5;
+  --color-pt-secondary: #1565C0;
+  --color-pt-accent: #2B5AED;
+  --color-pt-bg: #F3F6FB;
+}
+
+@import "aos/dist/aos.css";
+@import "./vms/tfx-kpi.css";
+
+* {
+    box-sizing: border-box;
+    text-rendering: optimizeLegibility !important;
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+/*
+ * Kissflow Page builder does not size custom components.
+ * The iframe/slot is flex; html → body → #root → .rootDiv must be height 100%
+ * so the page can fill available space. One scroll surface lives on the page.
+ */
+html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    min-width: 320px;
+    min-height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+    background: #f1f5f9;
+}
+
+#root {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.rootDiv {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Leads (and similar): scroll works, scrollbars hidden — WebKit, Firefox, IE/old Edge */
+.leads-scroll-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.leads-scroll-hide::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+}
+
+/* Smooth transitions for expand / interactions */
+@media (prefers-reduced-motion: no-preference) {
+    .transition-smooth {
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Filter-applied content transition (smooth framer-motion style) */
+@keyframes filter-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.animate-filter-in {
+    animation: filter-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes vms-vendor-panel-in {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .vms-vendor-panel-in {
+        animation: vms-vendor-panel-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+}
+
+/* Glassmorphism base */
+.glass {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* Framer Motion–style hover: lift + glow */
+.glass-hover {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.glass-hover:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .glass-hover:hover {
+        transform: none;
+    }
+}
+
+/* KPI cards: same lift + magnification feel as Quick Insights (.glass-hover), plus accent glow */
+.kpi-card {
+    min-width: 0;
+    max-width: 100%;
+    transform: translateZ(0);
+    will-change: transform, box-shadow;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow:
+        0 14px 35px rgba(var(--accent-rgb, 148, 163, 184), 0.18),
+        0 0 0 1px rgba(255, 255, 255, 0.55);
+}
+
+.kpi-card:hover {
+    /* Match LeadInsightCards / .glass-hover magnification */
+    transform: translateY(-4px) scale(1.01);
+    box-shadow:
+        0 24px 48px -12px rgba(15, 23, 42, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.5),
+        0 22px 50px rgba(var(--accent-rgb, 148, 163, 184), 0.28);
+}
+
+@media (max-width: 991px) {
+    .kpi-card {
+        box-shadow:
+            0 6px 16px rgba(var(--accent-rgb, 148, 163, 184), 0.14),
+            0 0 0 1px rgba(255, 255, 255, 0.55);
+    }
+    .kpi-card:hover {
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kpi-card:hover {
+        transform: none;
+    }
+
+    .kpi-card .group-hover\:scale-\[1\.22\],
+    .group:hover .origin-bottom-right {
+        transform: none !important;
+    }
+}
+
+/* Venwind hub — wind turbine & ambient motion */
+@keyframes venwind-blade-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes venwind-float {
+    0%, 100% { transform: translateY(0); opacity: 0.35; }
+    50% { transform: translateY(-6px); opacity: 0.55; }
+}
+
+.venwind-blade-spin {
+    animation: venwind-blade-spin 6s linear infinite;
+    transform-origin: 24px 24px;
+}
+
+.venwind-blade-spin-slow {
+    animation: venwind-blade-spin 12s linear infinite;
+    transform-origin: 24px 24px;
+}
+
+.venwind-float {
+    animation: venwind-float 5s ease-in-out infinite;
+}
+
+.venwind-float-delayed {
+    animation: venwind-float 7s ease-in-out infinite;
+    animation-delay: 1.5s;
+}
+
+@keyframes venwind-kpi-watermark-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.venwind-kpi-watermark-float {
+    animation: venwind-kpi-watermark-float 4.5s ease-in-out infinite;
+}
+
+.group:hover .venwind-kpi-icon {
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.4),
+        0 0 14px rgba(var(--vw-glow-rgb, 15, 118, 110), 0.55),
+        0 0 28px rgba(var(--vw-glow-rgb, 15, 118, 110), 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .venwind-blade-spin,
+    .venwind-blade-spin-slow,
+    .venwind-float,
+    .venwind-float-delayed,
+    .venwind-kpi-watermark-float {
+        animation: none;
+    }
+}
+
+.venwind-dashboard {
+    --vw-bg: #FAFBFC;
+    --vw-primary: #0F766E;
+    --vw-primary-hover: #115E59;
+    --vw-secondary: #64748B;
+    --vw-text: #0F172A;
+    --vw-text-muted: #64748B;
+    --vw-card: #FFFFFF;
+    --vw-border: #E2E8F0;
+    --vw-transition: all 0.25s ease;
+}
+
+/* Accent-colored shadow on hover — uses inline --accent var (not KPI cards) */
+.group:hover:not(.venwind-kpi-card) {
+    box-shadow: 0 20px 40px -12px color-mix(in srgb, var(--accent, #94a3b8) 25%, transparent);
+}
+
+/* Match VWMyItemsMyTasksPage: neutral elevation, no accent neon glow */
+.venwind-dashboard .venwind-kpi-card {
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+    border-radius: 1rem;
+}
+
+.venwind-dashboard .venwind-kpi-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px -6px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.05) !important;
+}
+
+.venwind-dashboard .venwind-kpi-card.group:hover {
+    box-shadow: 0 8px 24px -6px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.05) !important;
+}
+
+.venwind-dashboard .group:hover .venwind-kpi-icon {
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+/* Project Tracker theme — Lead dashboard / hub / CEO / opportunity pages */
+.lead-pt {
+    --color-brand-blue: #1E88E5;
+    --color-brand-green: #43A047;
+    font-family: Inter, 'Plus Jakarta Sans', system-ui, sans-serif;
+    color: #0F172A;
+}
+
+.lead-pt .kpi-card {
+    box-shadow: 0 10px 28px -14px rgba(15, 23, 42, 0.12) !important;
+}
+
+.lead-pt .kpi-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 48px -16px rgba(15, 23, 42, 0.22) !important;
+}
+
+@media (max-width: 991px) {
+    .lead-pt .kpi-card:hover {
+        transform: none;
+    }
+}
+
+/* Sathish_p2p / P2P theme — VMS / contracts / vendor pages */
+.p2p-theme {
+    --color-brand-blue: #17a2b4;
+    --brand-primary: #17a2b4;
+    --brand-secondary: #0f6b7a;
+    --brand-accent: #5fe0e6;
+    --tfx-teal: #0f6b7a;
+    --tfx-ink: #0f1b2d;
+    --tfx-ink-2: #3a4656;
+    font-family: Inter, 'Plus Jakarta Sans', system-ui, sans-serif;
+    color: #0F172A;
+    background: linear-gradient(180deg, #e8f6f9 0%, #f3f8fb 48%, #f7fbfc 100%);
+    min-height: 100%;
+}
+
+.p2p-theme .p2p-header {
+    position: relative;
+    overflow: hidden;
+}
+
+.p2p-theme .p2p-header::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: min(560px, 58%);
+    background: url('/p2p/vms-hero.jpg') right center / cover no-repeat;
+    opacity: 0.92;
+    pointer-events: none;
+    mask-image: linear-gradient(90deg, transparent, #000 28%);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 28%);
+}
+
+@keyframes p2p-rise {
+    0% { transform: translate(0, 0); opacity: 0; }
+    10% { opacity: 1; }
+    50% { transform: translate(12px, -140px); }
+    90% { opacity: .75; }
+    100% { transform: translate(-8px, -260px); opacity: 0; }
+}
+
+.p2p-header-bubbles {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+.p2p-header-bubbles i {
+    position: absolute;
+    bottom: -18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(23,162,180,.40));
+    box-shadow: 0 0 8px rgba(255,255,255,.55);
+    animation: p2p-rise linear infinite;
+}
+.p2p-header-bubbles i:nth-child(1) { left: 8%; width: 9px; height: 9px; animation-duration: 9s; }
+.p2p-header-bubbles i:nth-child(2) { left: 22%; width: 6px; height: 6px; animation-duration: 7s; animation-delay: 2s; }
+.p2p-header-bubbles i:nth-child(3) { left: 38%; width: 12px; height: 12px; animation-duration: 11s; animation-delay: 1s; }
+.p2p-header-bubbles i:nth-child(4) { left: 52%; width: 7px; height: 7px; animation-duration: 8s; animation-delay: 4s; }
+.p2p-header-bubbles i:nth-child(5) { left: 68%; width: 11px; height: 11px; animation-duration: 10s; animation-delay: 3s; }
+.p2p-header-bubbles i:nth-child(6) { left: 82%; width: 6px; height: 6px; animation-duration: 7.5s; animation-delay: .5s; }
+.p2p-header-bubbles i:nth-child(7) { left: 92%; width: 10px; height: 10px; animation-duration: 9.5s; animation-delay: 5s; }
+
+.p2p-theme .p2p-card {
+    transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s;
+}
+.p2p-theme .p2p-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 36px -14px rgba(15,107,122,.22), 0 6px 16px rgba(20,90,120,.08);
+}
+
+@media (max-width: 991px), (prefers-reduced-motion: reduce) {
+    .p2p-theme .p2p-card {
+        animation: none;
+        transform: none !important;
+    }
+    .p2p-theme .p2p-card:hover {
+        transform: none !important;
+    }
+    .p2p-header-bubbles { display: none; }
+}
+
